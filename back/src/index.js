@@ -1,4 +1,5 @@
 const express = require("express");
+const userRouter = require("./Controllers/Routes/user");
 const app = express();
 const cors = require("cors");
 const { connect } = require("./Connections/mongodbConnection");
@@ -8,6 +9,7 @@ app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/Public"));
 app.use(cors());
 app.use(express.json());
+app.use("/user", userRouter);
 
 // Connexion mongodb
 connect(process.env.MONGODB_URL, (error) => {
