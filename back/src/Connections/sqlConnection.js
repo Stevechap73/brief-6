@@ -3,8 +3,8 @@ require("dotenv").config;
 
 const pool = mysql.createPool({
   host: "localhost",
-  user: process.env.MYSQL_USER,
-  database: process.env.MYSQL_DATABASE,
+  user: "root",
+  database: "mingle_sphere",
   password: process.env.MYSQL_PASSWORD,
   waitForConnections: true,
   multipleStatements: true,
