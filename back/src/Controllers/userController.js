@@ -60,7 +60,7 @@ const addRegisterPicture = async (req, res) => {
   });
 };
 
-// Ajout d'un user une fois que le middleware est validé
+// Ajout d'un user une fois que le middleware est validé avec envoie de mail
 const register = async (req, res) => {
   try {
     const email = req.email;
@@ -77,12 +77,32 @@ const register = async (req, res) => {
       const picture_user = req.body.picture_user;
       const hash = await bcrypt.hash(password, 10);
       const sqlInsertRequest =
-        "INSERT INTO user (email, password, role_id, user_name, picture_user) VALUES (?, ?, ?, ?, ?)";
-      // const activationToken = await bcrypt.hash(email, 10);
+        "INSERT INTO user (email, password, role_id, user_name, picture_user, token, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-      const insertValues = [email, hash, role_id, user_name, picture_user];
+      const tokenBasis = email + `${new Date()}`;
+      const activationToken = await bcrypt.hash(tokenBasis, 10);
+      let cleanToken = activationToken.replaceAll("/", "");
+
+      const insertValues = [
+        email,
+        hash,
+        role_id,
+        user_name,
+        picture_user,
+        cleanToken,
+        2,
+      ];
       const [rows] = await pool.execute(sqlInsertRequest, insertValues);
       if (rows.affectedRows > 0) {
+        const info = await transporter.sendMail({
+          from: `${process.env.SMTP_EMAIL}`,
+          to: "steve.chapuis4@free.fr",
+          subject: "Email d'activation ✔",
+          text: "Activer votre compte",
+          html: `<p> You need to activate your email, to access our services, please click on this link :
+                <a href="http://localhost:3003/user/activate/${cleanToken}">Activate your email</a>
+          </p>`,
+        });
         res.status(201).json({ success: "inscription réussi" });
         return;
       } else {
@@ -97,7 +117,72 @@ const register = async (req, res) => {
   }
 };
 
+// Activation de compte
+const valideAccount = async (req, res) => {
+  try {
+    // On récupère le token présent dans le lien de l'email.
+    const token = req.params.token;
+    // On recherche l'utilisateur qui aurait ce token, que nous avions insérer lors
+    // de la création
+    const sql = `SELECT * FROM user WHERE token = ?`;
+    const values = [token];
+    const [result] = await pool.execute(sql, values);
+    if (!result) {
+      res.status(204).json({ error: "Wrong credentials" });
+      return;
+    }
+    // Si l'utilisateur ayant ce token existe, alors j'active le compte ,
+    // et supprime le token car il ne me sera plus utile pour le moment
+    await pool.execute(
+      `UPDATE user SET is_active = 1, token = NULL WHERE token = ?`,
+      [token]
+    );
+    res.status(200).json({ result: "Account a ctivated" });
+  } catch (error) {
+    res.status(500).json({ error: error.stack });
+    console.log(error.stack);
+  }
+};
+
+// // Ajout d'un user une fois que le middleware est validé sans l'envoie de mail attention enlevé la colonne token dans la base de données pour utiliser ce controller
+// const register = async (req, res) => {
+//   try {
+//     const email = req.email;
+//     const values = [email];
+//     const sql = `SELECT email FROM user WHERE email =  ?`;
+//     const [result] = await pool.execute(sql, values);
+//     if (result.length !== 0) {
+//       res.status(400).json({ error: "Mail déjà dans la base" });
+//       return;
+//     } else {
+//       const password = req.password;
+//       const role_id = req.role_id;
+//       const user_name = req.user_name;
+//       const picture_user = req.body.picture_user;
+//       const hash = await bcrypt.hash(password, 10);
+//       const sqlInsertRequest =
+//         "INSERT INTO user (email, password, role_id, user_name, picture_user) VALUES (?, ?, ?, ?, ?)";
+//       // const activationToken = await bcrypt.hash(email, 10);
+
+//       const insertValues = [email, hash, role_id, user_name, picture_user];
+//       const [rows] = await pool.execute(sqlInsertRequest, insertValues);
+//       if (rows.affectedRows > 0) {
+//         res.status(201).json({ success: "inscription réussi" });
+//         return;
+//       } else {
+//         res.status(500).json({ error: "L'nscription a échoué" });
+//         return;
+//       }
+//     }
+//   } catch (error) {
+//     console.log(error.stack);
+//     res.status(500).json({ error: "Erreur du serveur" });
+//     return;
+//   }
+// };
+
 // Connexion sur un compte existant
+
 const login = async (req, res) => {
   if (!req.body.identifier || !req.body.password) {
     res.status(400).json({ error: "Champs manquants" });
@@ -158,4 +243,10 @@ const testEmail = async (req, res) => {
   res.status(200).json(`Message send with the id ${info.messageId}`);
 };
 
-module.exports = { addRegisterPicture, register, login, testEmail };
+module.exports = {
+  addRegisterPicture,
+  register,
+  valideAccount,
+  login,
+  testEmail,
+};

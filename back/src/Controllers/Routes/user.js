@@ -2,6 +2,7 @@ const express = require("express");
 const {
   addRegisterPicture,
   register,
+  valideAccount,
   login,
   testEmail,
 } = require("../userController");
@@ -16,6 +17,9 @@ router.post("/add/picture", addRegisterPicture);
 
 // ajout d'un user
 router.post("/register", verifRegister, register);
+
+// activation compte
+router.get("/activate", valideAccount);
 
 // Login
 router.post("/login", login);
