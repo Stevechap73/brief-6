@@ -8,6 +8,7 @@ const { transporter } = require("../Utils/mailer"); // pour l'envoie de mail
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
+const { error } = require("console");
 require("dotenv").config();
 
 app.set("views", path.join(__dirname, "views"));
@@ -103,6 +104,7 @@ const register = async (req, res) => {
                 <a href="http://localhost:3003/user/activate/${cleanToken}">Activate your email</a>
           </p>`,
         });
+
         res.status(201).json({ success: "inscription réussi" });
         return;
       } else {
@@ -137,7 +139,7 @@ const valideAccount = async (req, res) => {
       `UPDATE user SET is_active = 1, token = NULL WHERE token = ?`,
       [token]
     );
-    res.status(200).json({ result: "Account a ctivated" });
+    return res.status(200).json({ result: "Account activated" });
   } catch (error) {
     res.status(500).json({ error: error.stack });
     console.log(error.stack);
@@ -194,13 +196,20 @@ const login = async (req, res) => {
     const values = [identifier, identifier];
     const sql = `SELECT * FROM user WHERE email = ? OR user_name = ?`;
     const [result] = await pool.execute(sql, values);
-
+    console.log(result);
     if (result.length === 0) {
       res.status(401).json({ error: "Identifiants invalides" });
       return;
     } else {
+      if (result[0].is_active === 2) {
+        res.status(401).json({
+          error:
+            "Votre compte n'est pas activé. Veuillez activer votre compte avec l'email d'activation",
+        });
+        return;
+      }
       await bcrypt.compare(
-        password,
+        req.body.password,
         result[0].password,
         function (err, bcyrptresult) {
           if (err) {
@@ -219,7 +228,7 @@ const login = async (req, res) => {
             { expiresIn: "20d" }
           );
           console.log();
-          res.status(200).json({ jwt: token, role: result[0].role });
+          res.status(200).json({ jwt: token, role_id: result[0].role_id });
           return;
         }
       );

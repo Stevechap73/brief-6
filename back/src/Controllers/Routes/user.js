@@ -19,7 +19,7 @@ router.post("/add/picture", addRegisterPicture);
 router.post("/register", verifRegister, register);
 
 // activation compte
-router.get("/activate", valideAccount);
+router.get("/activate/:token", valideAccount);
 
 // Login
 router.post("/login", login);
