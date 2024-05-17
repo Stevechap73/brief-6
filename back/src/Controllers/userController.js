@@ -8,7 +8,7 @@ const { transporter } = require("../Utils/mailer"); // pour l'envoie de mail
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
-const { error } = require("console");
+
 require("dotenv").config();
 
 app.set("views", path.join(__dirname, "views"));
@@ -73,7 +73,7 @@ const register = async (req, res) => {
       return;
     } else {
       const password = req.password;
-      const role_id = req.role_id;
+      // const role_id = req.role_id;
       const user_name = req.user_name;
       const picture_user = req.body.picture_user;
       const hash = await bcrypt.hash(password, 10);
@@ -87,7 +87,7 @@ const register = async (req, res) => {
       const insertValues = [
         email,
         hash,
-        role_id,
+        1,
         user_name,
         picture_user,
         cleanToken,
@@ -196,7 +196,7 @@ const login = async (req, res) => {
     const values = [identifier, identifier];
     const sql = `SELECT * FROM user WHERE email = ? OR user_name = ?`;
     const [result] = await pool.execute(sql, values);
-    console.log(result);
+    // console.log(result);
     if (result.length === 0) {
       res.status(401).json({ error: "Identifiants invalides" });
       return;
@@ -209,7 +209,7 @@ const login = async (req, res) => {
         return;
       }
       await bcrypt.compare(
-        req.body.password,
+        password,
         result[0].password,
         function (err, bcyrptresult) {
           if (err) {
@@ -223,6 +223,7 @@ const login = async (req, res) => {
               id: result[0].id,
               role_id: result[0].role_id,
               user_name: result[0].user_name,
+              picture_user: result[0].picture_user,
             },
             process.env.SECRET_KEY,
             { expiresIn: "20d" }

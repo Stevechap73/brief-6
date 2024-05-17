@@ -26,6 +26,7 @@ const createPost = async (request, response) => {
         request.body.title,
         request.body.body,
         authData.id,
+        authData.picture_user,
         "published",
         //   authData.id,
         new Date().toLocaleDateString("fr")
@@ -118,6 +119,48 @@ const deletePost = async (request, response) => {
 };
 
 // Modifier un post
+const updateListing = async (request, response) => {
+  if (!request.body.title || !request.body.body) {
+    response.status(400).json({ erro: "Des champs sont manquants" });
+  }
+  let post = await client
+    .db("mingle_sphere")
+    .collection("post")
+    .find({ _id: new ObjectId(request.body.postId) });
+
+  if (!post) {
+    response.status(401).json({ error: "Requête non autorisée" });
+    return;
+  }
+
+  if (listing.memberId !== member._id || member.role !== "admin") {
+    response.status(401).json({ error: "Requête non autorisée" });
+    return;
+  }
+
+  try {
+    await client
+      .db("Sorties-2000's")
+      .collection("listing")
+      .updateOne(
+        { _id: listing._id },
+        {
+          $set: {
+            title: request.body.title,
+            orgnizer: request.body.orgnizer,
+            releaseDate: request.body.releaseDate,
+            descriptionTrip: request.body.descriptionTrip,
+            nbPlaces: request.body.nbPlaces,
+            appointmentAddress: request.body.appointmentAddress,
+            status: request.body.status,
+          },
+        }
+      );
+  } catch (e) {
+    console.log(e);
+    response.status(500).json(e);
+  }
+};
 
 module.exports = {
   createPost,
