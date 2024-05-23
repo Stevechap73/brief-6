@@ -10,12 +10,13 @@
     />
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <!-- Barre de navigation -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
       <div class="container-fluid">
         <a class="navbar-brand" href="../../index.html"
           ><img
-            style="width: 50px"
-            src="../../Assets/medias/logo.png"
+            style="width: 100px"
+            src="../../Assets/medias/logo3.png"
             alt="logo de l'entreprise"
         /></a>
 
@@ -39,13 +40,10 @@
               <a class="nav-link" href="#"></a>
             </li>
           </ul>
-          <div class="text-success pe-5">
-            <h1>LOVELY GARDEN</h1>
-          </div>
 
           <div class="px-0">
             <button
-              onclick="pageRegister2()"
+              onclick="pageRegister()"
               class="btn btn-outline-primary"
               type="submit"
             >
@@ -55,7 +53,7 @@
               <a href="../auth/login.html"> Connection</a>
             </button>
             <button
-              onclick="logout2()"
+              onclick="logout()"
               class="btn btn-outline-info"
               type="submit"
             >
@@ -65,9 +63,69 @@
         </div>
       </div>
     </nav>
-    <h1 class="text-center text-success bg-body-tertiary">NOS EQUIPEMENTS</h1>
-
+    <!-- Card post -->
     <div class="cards2 row row-cols-1 row-cols-md-3 g-4 gap-3"></div>
+
+    <!-- Card user -->
+    <div class="card m-5 fixed" style="width: 18rem">
+      <div
+        class="card-header bg-primary d-flex justify-content-center align-items-center"
+      >
+        <img
+          src="/back/src/Public/uploads/image-1715930255935 (1).jpg"
+          class="card-img-center rounded-circle"
+          style="width: 80px"
+          alt="..."
+        />
+      </div>
+      <div class="d-flex justify-content-center align-items-center"></div>
+      <div class="card-body">
+        <h5 class="card-title text-center">Nom</h5>
+        <p class="card-text">
+          Some quick example text to build on the card title and make up the
+          bulk of the card's content.
+        </p>
+        <ul class="list-group list-group-flush text-center">
+          <li class="list-group-item"></li>
+          <li class="list-group-item">
+            Following
+            <p>30</p>
+          </li>
+          <li class="list-group-item">
+            Followers
+            <p>45</p>
+          </li>
+          <li class="list-group-item"></li>
+        </ul>
+        <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+      </div>
+    </div>
+
+    <!-- Card my post -->
+    <div class="card mb-3 m-5" style="max-width: 540px">
+      <div class="row g-0">
+        <div class="col-md-4">
+          <img
+            src="/back/src/Public/uploads/image-1715930255935 (1).jpg"
+            class="img-fluid rounded-circle"
+            alt="..."
+          />
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">
+              This is a wider card with supporting text below as a natural
+              lead-in to additional content. This content is a little bit
+              longer.
+            </p>
+            <p class="card-text">
+              <small class="text-body-secondary">Last updated 3 mins ago</small>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script src="../../Assets/js/user.js"></script>
     <script src="../../Assets/js/index.js"></script>

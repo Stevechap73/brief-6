@@ -3,23 +3,31 @@ const {
   addRegisterPicture,
   register,
   valideAccount,
+  emailForgotPassword,
+  ForgotPassword,
   login,
   testEmail,
 } = require("../userController");
 
-// importer les middlewares
+// Importer les middlewares
 const { verifRegister } = require("../../Middlewares/middlewares");
 
 const router = express.Router();
 
-// ajout d'une image
+// Ajout d'une image
 router.post("/add/picture", addRegisterPicture);
 
-// ajout d'un user
+// Ajout d'un user
 router.post("/register", verifRegister, register);
 
-// activation compte
+// Activation compte
 router.get("/activate/:token", valideAccount);
+
+// Génération d'un mail pour la réinitialisation du mot de passe
+router.post("/emailForgotPassword", emailForgotPassword);
+
+// Création du nouveau mot de passe
+router.patch("/forgotPassword", ForgotPassword);
 
 // Login
 router.post("/login", login);

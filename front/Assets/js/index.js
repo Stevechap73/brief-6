@@ -67,21 +67,20 @@ async function getAllPost() {
                         <div class="card-body">
                         <h5 class="card-title">${post.title}</h5>
                         <p class="card-text">${post.body}</p>
-                        <a href="" class="btn btnDelet btn-primary">Supprimer</a>
-                        <a href="" class="btn btnEdit btn-primary">Modifer</a>
                         </div>
                         </div>`;
   });
+  //  <a href="" class="btn btnDelet btn-primary">Supprimer</a>
+  //  <a href="" class="btn btnEdit btn-primary">Modifer</a>
+  // let btn = document.querySelector(`.btnDelet-${post.id}`);
+  // btn.addEventListener("click", () => {
+  //   deleteEquipment(post.id);
+  // });
 
-  let btn = document.querySelector(`.btnDelet-${post.id}`);
-  btn.addEventListener("click", () => {
-    deleteEquipment(post.id);
-  });
-
-  let btn2 = document.querySelector(`.btnEdit-${post.id}`);
-  btn2.addEventListener("click", () => {
-    UpdateEquipment(post.id, post);
-  });
+  // let btn2 = document.querySelector(`.btnEdit-${post.id}`);
+  // btn2.addEventListener("click", () => {
+  //   UpdateEquipment(post.id, post);
+  // });
 }
 
 getAllPost();

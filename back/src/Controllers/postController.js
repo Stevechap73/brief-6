@@ -27,10 +27,9 @@ const createPost = async (request, response) => {
         request.body.body,
         authData.id,
         authData.picture_user,
+        request.body.picture_post,
         "published",
-        //   authData.id,
         new Date().toLocaleDateString("fr")
-        //   "published"
       );
       let result = await client
         .db("mingle_sphere")
@@ -77,14 +76,53 @@ const getMyPost = async (request, response) => {
 
 // Supprimer un post
 const deletePost = async (request, response) => {
-  if (!request.body.user_id) {
-    response.status(400).json({ error: "Le champs id est manquant" });
-    return;
-  }
-  let id = new ObjectId(request.body.id);
-
   const token = await extractToken(request);
+  jwt.verify(token, process.env.SECRET_KEY, async (err, authData) => {
+    if (err) {
+      console.log(err);
+      response
+        .status(401)
+        .json({ error: "Requête non autorisée : le Token n'est pas bon" });
+      return;
+    }
 
+    let postId = new ObjectId(request.body._id);
+
+    try {
+      // Vérifiez si le post existe et récupérez les détails
+      let post = await client
+        .db("mingle_sphere")
+        .collection("post")
+        .findOne({ _id: postId });
+
+      if (!post) {
+        response.status(404).json({ error: "Post non trouvé" });
+        return;
+      }
+
+      // Vérifiez si l'utilisateur est autorisé à supprimer le post
+      if (post.user_id !== authData.id || authData.role_id !== 1) {
+        response.status(403).json({ error: "Requête non autorisée" });
+        return;
+      }
+
+      // Supprimez le post
+      await client
+        .db("mingle_sphere")
+        .collection("post")
+        .deleteOne({ _id: postId });
+
+      response.status(200).json({ message: "Post supprimé avec succès" });
+    } catch (e) {
+      console.log(e);
+      response.status(500).json({ error: "Une erreur est survenue" });
+    }
+  });
+};
+
+// Modifier un post
+const updatePost = async (request, response) => {
+  const token = await extractToken(request);
   jwt.verify(token, process.env.SECRET_KEY, async (err, authData) => {
     if (err) {
       console.log(err);
@@ -93,73 +131,42 @@ const deletePost = async (request, response) => {
         .json({ err: "Requête non autorisée le Token n'est pas bon" });
       return;
     }
-
+    let postId = new ObjectId(request.params.id);
     let post = await client
       .db("mingle_sphere")
       .collection("post")
-      .find({ user_id: authData.id });
-    if (!post) {
-      response.status(401).json({ error: "Requête non autorisée" });
+      .findOne({ _id: postId });
+    console.log(post._id);
+    console.log(postId);
+    if (post._id !== postId) {
+      response.status(404).json({ error: "Post non trouvé" });
       return;
     }
-    if (authData.id !== post.user_id || authData.role_id !== "1") {
-      response.status(401).json({ error: "Requête non autorisée" });
+
+    // Vérifiez si l'utilisateur est autorisé à supprimer le post
+    if (post.user_id !== authData.id || authData.role_id !== 1) {
+      response.status(403).json({ error: "Requête non autorisée" });
       return;
     }
+
     try {
-      await client
+      let title = request.body.title;
+      let body = request.body.body;
+      let picture_post = request.body.picture_post;
+      let result = await client
         .db("mingle_sphere")
         .collection("post")
-        .deleteOne({ _id: id });
-    } catch (e) {
-      console.log(e);
-      response.status(500).json(e);
+        .updateOne({ _id: postId }, { $set: { title, body, picture_post } });
+      if (result.modifiedCount === 1) {
+        response.status(200).json({ msg: "Modification réussie" });
+      } else {
+        response.status(404).json({ msg: "Vous n'avez rien modifié" });
+      }
+    } catch (error) {
+      console.log(error);
+      response.status(501).json(error);
     }
   });
-};
-
-// Modifier un post
-const updateListing = async (request, response) => {
-  if (!request.body.title || !request.body.body) {
-    response.status(400).json({ erro: "Des champs sont manquants" });
-  }
-  let post = await client
-    .db("mingle_sphere")
-    .collection("post")
-    .find({ _id: new ObjectId(request.body.postId) });
-
-  if (!post) {
-    response.status(401).json({ error: "Requête non autorisée" });
-    return;
-  }
-
-  if (listing.memberId !== member._id || member.role !== "admin") {
-    response.status(401).json({ error: "Requête non autorisée" });
-    return;
-  }
-
-  try {
-    await client
-      .db("Sorties-2000's")
-      .collection("listing")
-      .updateOne(
-        { _id: listing._id },
-        {
-          $set: {
-            title: request.body.title,
-            orgnizer: request.body.orgnizer,
-            releaseDate: request.body.releaseDate,
-            descriptionTrip: request.body.descriptionTrip,
-            nbPlaces: request.body.nbPlaces,
-            appointmentAddress: request.body.appointmentAddress,
-            status: request.body.status,
-          },
-        }
-      );
-  } catch (e) {
-    console.log(e);
-    response.status(500).json(e);
-  }
 };
 
 module.exports = {
@@ -167,4 +174,80 @@ module.exports = {
   getAllPost,
   getMyPost,
   deletePost,
+  updatePost,
 };
+
+// const deletePost2 = async (request, response) => {
+// const token = await extractToken(request);
+//   jwt.verify(token, process.env.SECRET_KEY, async (err, authData) => {
+//     if (err) {
+//       console.log(err);
+//       response
+//         .status(401)
+//         .json({ err: "Requête non autorisée le Token n'est pas bon" });
+//       return;
+//     }
+//      if (authData.id !== !request.body.user_id) {
+//     response.status(400).json({ error: "Le champs id est manquant" });
+//     return;
+//   }
+
+//     // const password = request.body.password;
+//     // const email = authData.email;
+//     // const hash = await bcrypt.hash(password, 10);
+//     // const sqlModifRequest = `UPDATE user SET password = ? WHERE email = ?`;
+
+//     // const modifValues = [hash, email];
+//     // const [rows] = await pool.execute(sqlModifRequest, modifValues);
+//     // if (rows.affectedRows > 0) {
+//     //   response
+//     //     .status(201)
+//     //     .json({ success: "Mofification mot de passe réussi" });
+//     //   return;
+//     // } else {
+//     //   response.status(500).json({ error: "L'nscription a échoué" });
+//     //   return;
+//     // }
+//   });
+// };
+
+//   if (!request.body.user_id) {
+//     response.status(400).json({ error: "Le champs id est manquant" });
+//     return;
+//   }
+//   let id = new ObjectId(request.body.id);
+
+//   const token = await extractToken(request);
+
+//   jwt.verify(token, process.env.SECRET_KEY, async (err, authData) => {
+//     if (err) {
+//       console.log(err);
+//       response
+//         .status(401)
+//         .json({ err: "Requête non autorisée le Token n'est pas bon" });
+//       return;
+//     }
+
+//     let post = await client
+//       .db("mingle_sphere")
+//       .collection("post")
+//       .find({ user_id: authData.id });
+//     if (!post) {
+//       response.status(401).json({ error: "Requête non autorisée" });
+//       return;
+//     }
+//     if (authData.id !== post.user_id || authData.role_id !== "1") {
+//       response.status(401).json({ error: "Requête non autorisée" });
+//       return;
+//     }
+//     try {
+//       await client
+//         .db("mingle_sphere")
+//         .collection("post")
+//         .deleteOne({ _id: id });
+//     } catch (e) {
+//       console.log(e);
+//       response.status(500).json(e);
+//     }
+//   });
+// };

@@ -22,7 +22,7 @@ async function handleRegister() {
       user_name: name,
       picture_user: uploadedImage,
     };
-    console.log(user.name);
+    console.log(user);
 
     try {
       let response = await fetch("http://localhost:3003/user/register", {
@@ -34,10 +34,12 @@ async function handleRegister() {
       });
       console.log(user);
       if (response.ok) {
-        alert(" tu es fort l'utilisateur est enregistré avec succès.");
+        alert("Vous êtes un génie, votre inscription est un succès !");
         window.location.href = "./login.html";
       } else {
-        console.log(" tu es pas bon l'utilisateur n'est pas enregistré.");
+        console.log(
+          "Vous n'avez pas de chance, votre incription est un échèque !"
+        );
         return;
       }
     } catch (error) {
@@ -66,14 +68,14 @@ async function handleLogin() {
   let apiRequest = fetch("http://localhost:3003/user/login", request);
   let response = await apiRequest;
   let data = await response.json();
-  console.log(response);
+  console.log(data);
   if (response.status === 200) {
     let jwt = data.jwt;
-    let role = data.role;
+    let role_id = data.role_id;
     window.localStorage.setItem("jwt", jwt);
     console.log(jwt);
-    console.log(role);
-    if (role === "admin") {
+    console.log(role_id);
+    if (role_id === 2) {
       window.location.href = "../../Views/admin/admin.html";
     } else {
       window.location.href = "../../Views/user/user.html";
@@ -81,6 +83,81 @@ async function handleLogin() {
   } else {
     alert("Mauvais identifiants");
   }
+}
+
+// Fonction pour récupérer un paramètre de la chaîne de requête
+function getQueryParam(param) {
+  let url = new URL(window.location.href);
+  let params = new URLSearchParams(url.search);
+  return params.get(param);
+}
+
+async function handleEmailForgotPassord() {
+  let email = document.querySelector(".email").value;
+
+  let user = {
+    email: email,
+  };
+
+  let token = getQueryParam("token");
+
+  let request = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(user),
+  };
+
+  let apiRequest = fetch(
+    "http://localhost:3003/user/emailForgotPassword",
+    request
+  );
+  let response = await apiRequest;
+  let data = await response.json();
+  console.log(data);
+  if (response.status === 200) {
+    alert("Mail envoyé");
+    let jwt = data.jwt;
+    window.localStorage.setItem("jwt", jwt);
+    console.log(jwt);
+    window.location.href = "../../Views/auth/index.html";
+  } else {
+    alert("Mauvais identifiants");
+  }
+}
+
+async function forgotPassord() {
+  let password = document.querySelector(".password").value;
+
+  let user = {
+    password: password,
+  };
+
+  let token = getQueryParam("token");
+
+  let request = {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(user),
+  };
+
+  let apiRequest = fetch("http://localhost:3003/user/forgotPassword", request);
+  let response = await apiRequest;
+  let data = await response.json();
+  alert("modif réussi!");
+  window.location.href = "../../Views/auth/login.html";
+  console.log(data);
+  // if (response.status === 200) {
+  //   alert("modif réussi!");
+  //   // let jwt = data.jwt;
+  //   // window.localStorage.setItem("jwt", jwt);
+  //   // console.log(jwt);
+  // }
 }
 
 // async function handleLogin() {
