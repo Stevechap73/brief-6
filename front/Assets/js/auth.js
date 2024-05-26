@@ -122,7 +122,7 @@ async function handleEmailForgotPassord() {
     let jwt = data.jwt;
     window.localStorage.setItem("jwt", jwt);
     console.log(jwt);
-    window.location.href = "../../Views/auth/index.html";
+    window.location.href = "../../index.html";
   } else {
     alert("Mauvais identifiants");
   }

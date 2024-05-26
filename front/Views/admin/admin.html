@@ -8,18 +8,20 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
   </head>
   <body>
-    <!-- Barre de navigation -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-5">
       <div class="container-fluid">
         <a class="navbar-brand" href="../../index.html"
           ><img
             style="width: 100px"
             src="../../Assets/medias/logo3.png"
-            alt="logo de l'entreprise"
+            alt="Logo du réseau social"
         /></a>
-        <h1>admin</h1>
         <button
           class="navbar-toggler"
           type="button"
@@ -34,102 +36,173 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
+              <a class="nav-link active" aria-current="page" href="#"
+                >Mingle Sphère</a
+              >
+            </li>
+            <!-- <li class="nav-item">
+              <a class="nav-link" href="#">MINGLE SEPHERE</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#"></a></li>
+                <li><a class="dropdown-item" href="#"></a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="#"></a>
+                </li>
+              </ul>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#"></a>
-            </li>
+              <a class="nav-link disabled"></a>
+            </li> -->
           </ul>
-
+          <form class="d-flex" role="search">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+          </form>
           <div class="px-0">
+            <button class="btn btn-outline-success" type="submit">
+              Recherche
+            </button>
+            <!-- Modal -->
             <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#modalAdd"
+              data-bs-whatever="@mdo"
+            >
+              Add post
+            </button>
+            <div
+              class="modal fade"
+              id="modalAdd"
+              tabindex="-1"
+              aria-labelledby="exampleModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                      Ajout d'un nouveau post
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <form>
+                      <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label"
+                          >Titre du post :</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control title"
+                          id="recipient-name"
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="message-text" class="col-form-label"
+                          >Message :</label
+                        >
+                        <textarea
+                          class="form-control message"
+                          id="message-text"
+                        ></textarea>
+                      </div>
+                      <div class="mb-3">
+                        <label for="image" class="col-form-label"
+                          >Image :</label
+                        >
+                        <input
+                          type="file"
+                          class="form-control image"
+                          id="image"
+                        />
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Fermé
+                    </button>
+                    <button
+                      onclick="handleInsertPost()"
+                      type="button"
+                      class="btn btn-primary"
+                    >
+                      Publication du post
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <button
               onclick="pageRegister()"
               class="btn btn-outline-primary"
               type="submit"
             >
               Inscription
             </button>
-            <button class="btn btn-outline-danger" type="submit">
-              <a href="../auth/login.html"> Connection</a>
-            </button>
             <button
-              onclick="logout()"
-              class="btn btn-outline-info"
+              onclick="pageLogin()"
+              class="btn btn-outline-danger"
               type="submit"
             >
-              Deconnection
+              Connection
+            </button> -->
+
+            <button
+              onclick="logout()"
+              class="btn btn-outline-primary"
+              type="submit"
+            >
+              <i class="fa-solid fa-power-off"></i>
             </button>
           </div>
         </div>
       </div>
     </nav>
 
-    <!-- Card post -->
-    <div class="cards2 row row-cols-1 row-cols-md-3 g-4 gap-3"></div>
-
     <!-- Card user -->
-    <div class="card m-5 fixed" style="width: 18rem">
-      <div
-        class="card-header bg-primary d-flex justify-content-center align-items-center"
-      >
-        <img
-          src="/back/src/Public/uploads/image-1715930255935 (1).jpg"
-          class="card-img-center rounded-circle"
-          style="width: 80px"
-          alt="..."
-        />
-      </div>
-      <div class="d-flex justify-content-center align-items-center"></div>
-      <div class="card-body">
-        <h5 class="card-title text-center">Nom</h5>
-        <p class="card-text">
-          Some quick example text to build on the card title and make up the
-          bulk of the card's content.
-        </p>
-        <ul class="list-group list-group-flush text-center">
-          <li class="list-group-item"></li>
-          <li class="list-group-item">
-            Following
-            <p>30</p>
-          </li>
-          <li class="list-group-item">
-            Followers
-            <p>45</p>
-          </li>
-          <li class="list-group-item"></li>
-        </ul>
-        <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
-      </div>
-    </div>
+    <div
+      id="cards"
+      class="cards1"
+      style="flex-direction: column; margin-left: 300px"
+    ></div>
 
-    <!-- Card my post -->
-    <div class="card mb-3 m-5" style="max-width: 540px">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <img
-            src="/back/src/Public/uploads/image-1715930255935 (1).jpg"
-            class="img-fluid rounded-circle"
-            alt="..."
-          />
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">
-              This is a wider card with supporting text below as a natural
-              lead-in to additional content. This content is a little bit
-              longer.
-            </p>
-            <p class="card-text">
-              <small class="text-body-secondary">Last updated 3 mins ago</small>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Génération des cards My Post suivant la base de données -->
+    <!-- <div class="cards" style="flex-direction: column; margin-left: 300px"></div> -->
 
-    <script src="../../Assets/js/user.js"></script>
-    <script src="../../Assets/js/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://kit.fontawesome.com/e5ced9d846.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- <script src="../../Assets/js/index.js"></script> -->
+    <script src="../../Assets/js/admin.js"></script>
   </body>
 </html>

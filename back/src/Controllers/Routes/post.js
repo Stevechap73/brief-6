@@ -1,5 +1,6 @@
 const express = require("express");
 const {
+  addPostPicture,
   createPost,
   getAllPost,
   getMyPost,
@@ -10,6 +11,7 @@ const { verifyToken } = require("../../Utils/extractToken");
 
 const router = express.Router();
 
+router.route("/add/picture").post(addPostPicture);
 router.route("/createPost").post(createPost);
 router.route("/all").get(getAllPost);
 router.route("/myPost", verifyToken).get(getMyPost);
