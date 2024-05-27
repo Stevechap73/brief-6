@@ -294,6 +294,36 @@ const testEmail = async (req, res) => {
   res.status(200).json(`Message send with the id ${info.messageId}`);
 };
 
+// Afficher tous les user
+const getAllUser = async (req, res) => {
+  try {
+    const sql = `SELECT * FROM  user`;
+
+    const [result] = await pool.query(sql);
+
+    res.status(200).json({ result });
+    return;
+  } catch (error) {
+    console.log(error.stack);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+// Suppréssion d'un user par un admin
+const deleteUser = async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+  const values = [id];
+  try {
+    const sql = `DELETE FROM user where id = ?`;
+    const [rows] = await pool.execute(sql, values);
+    res.status(200).json({ data: rows });
+  } catch (error) {
+    console.log(error.stack);
+    res.status(500).json({ message: "erreur serveur" });
+  }
+};
+
 module.exports = {
   addRegisterPicture,
   register,
@@ -302,123 +332,6 @@ module.exports = {
   ForgotPassword,
   login,
   testEmail,
+  getAllUser,
+  deleteUser,
 };
-
-// // code de secours si crach
-// const ForgotPassword2 = async (req, res) => {
-//   if (!req.body.password) {
-//     res.status(400).json({ error: "Champs manquants" });
-//     return;
-//   }
-//   const password = req.body.password;
-//   const email = req.body.email;
-//   const hash = await bcrypt.hash(password, 10);
-//   const sqlModifRequest = `UPDATE user SET password = ? WHERE email = ?`;
-
-//   const modifValues = [hash, email];
-//   const [rows] = await pool.execute(sqlModifRequest, modifValues);
-//   if (rows.affectedRows > 0) {
-//     res.status(201).json({ success: "Mofification mot de passe réussi" });
-//     return;
-//   } else {
-//     res.status(500).json({ error: "L'nscription a échoué" });
-//     return;
-//   }
-// };
-
-// fin de code à intégrer
-
-// Modifier le mot de passe suite à la réception du mail renouvellement mot de passe
-
-// // Ajout d'un user une fois que le middleware est validé sans l'envoie de mail attention enlevé la colonne token dans la base de données pour utiliser ce controller
-// const register = async (req, res) => {
-//   try {
-//     const email = req.email;
-//     const values = [email];
-//     const sql = `SELECT email FROM user WHERE email =  ?`;
-//     const [result] = await pool.execute(sql, values);
-//     if (result.length !== 0) {
-//       res.status(400).json({ error: "Mail déjà dans la base" });
-//       return;
-//     } else {
-//       const password = req.password;
-//       const role_id = req.role_id;
-//       const user_name = req.user_name;
-//       const picture_user = req.body.picture_user;
-//       const hash = await bcrypt.hash(password, 10);
-//       const sqlInsertRequest =
-//         "INSERT INTO user (email, password, role_id, user_name, picture_user) VALUES (?, ?, ?, ?, ?)";
-//       // const activationToken = await bcrypt.hash(email, 10);
-
-//       const insertValues = [email, hash, role_id, user_name, picture_user];
-//       const [rows] = await pool.execute(sqlInsertRequest, insertValues);
-//       if (rows.affectedRows > 0) {
-//         res.status(201).json({ success: "inscription réussi" });
-//         return;
-//       } else {
-//         res.status(500).json({ error: "L'nscription a échoué" });
-//         return;
-//       }
-//     }
-//   } catch (error) {
-//     console.log(error.stack);
-//     res.status(500).json({ error: "Erreur du serveur" });
-//     return;
-//   }
-// };
-
-// const login = async (req, res) => {
-//   if (!req.body.identifier || !req.body.password) {
-//     res.status(400).json({ error: "Champs manquants" });
-//     return;
-//   }
-//   let identifier = req.body.identifier;
-//   let password = req.body.password;
-//   try {
-//     const values = [identifier, identifier];
-//     const sql = `SELECT * FROM user WHERE email = ? OR user_name = ?`;
-//     const [result] = await pool.execute(sql, values);
-
-//     if (result.length === 0) {
-//       res.status(401).json({ error: "Identifiants invalides" });
-//       return;
-//     } else {
-//       if (result[0].is_active === 2) {
-//         res.status(401).json({
-//           error:
-//             "Votre compte n'est pas activé. Veuillez activer votre compte avec l'email d'activation",
-//         });
-//         return;
-//       }
-//       await bcrypt.compare(
-//         password,
-//         result[0].password,
-//         function (err, bcyrptresult) {
-//           if (err) {
-//             res.status(401).json({ error: "Identifiants invalides" });
-//             return;
-//           }
-//           console.log(password);
-//           console.log(result[0].password);
-//           const token = jwt.sign(
-//             {
-//               email: result[0].email,
-//               id: result[0].id,
-//               role_id: result[0].role_id,
-//               user_name: result[0].user_name,
-//               picture_user: result[0].picture_user,
-//             },
-//             process.env.SECRET_KEY,
-//             { expiresIn: "20d" }
-//           );
-//           console.log();
-//           res.status(200).json({ jwt: token, role_id: result[0].role_id });
-//           return;
-//         }
-//       );
-//     }
-//   } catch (error) {
-//     console.log(error.stack);
-//     res.status(500).json({ message: "Erreur serveur" });
-//   }
-// };

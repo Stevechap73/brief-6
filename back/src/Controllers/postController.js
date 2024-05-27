@@ -104,8 +104,6 @@ const createPost = async (request, response) => {
 
 // Afficher tous les posts
 const getAllPost = async (request, response) => {
-  console.log("played");
-
   let post = await client.db("mingle_sphere").collection("post").find();
   let apiResponse = await post.toArray();
   response.status(200).json(apiResponse);
@@ -234,27 +232,27 @@ const updatePost = async (request, response) => {
   });
 };
 
-// Affichage de l'user
-// const getUser = async (request, response) => {
-//   const token = await extractToken(request);
+// Barre de recherche
+const getSearch = async (request, response) => {
+  const { user_name } = request.query; // Récupérer le paramètre de requête 'user_name'
 
-//   jwt.verify(token, process.env.SECRET_KEY, async (err, authData) => {
-//     if (err) {
-//       console.log(err);
-//       response
-//         .status(401)
-//         .json({ err: "Requête non autorisée le Token n'est pas bon" });
-//       return;
-//     } else {
-//       let post = await client
-//         .db("mingle_sphere")
-//         .collection("post")
-//         .find({ user_id: authData.id });
-//       let apiResponse = await post.toArray();
-//       response.status(200).json(apiResponse);
-//     }
-//   });
-// };
+  if (!user_name) {
+    return response.status(400).send('Query parameter "user_name" is required');
+  }
+
+  try {
+    // Rechercher des documents où le champ 'user_name' correspond à l'expression régulière insensible à la casse
+    const post = await client
+      .db("mingle_sphere")
+      .collection("post")
+      .find({ user_name: new RegExp(user_name, "i") });
+
+    const apiResponse = await post.toArray(); // Convertir les résultats en tableau
+    response.status(200).json(apiResponse); // Envoyer les résultats dans la réponse JSON
+  } catch (err) {
+    response.status(500).send("Server error"); // Gérer les erreurs
+  }
+};
 
 module.exports = {
   addPostPicture,
@@ -264,78 +262,3 @@ module.exports = {
   deletePost,
   updatePost,
 };
-
-// const deletePost2 = async (request, response) => {
-// const token = await extractToken(request);
-//   jwt.verify(token, process.env.SECRET_KEY, async (err, authData) => {
-//     if (err) {
-//       console.log(err);
-//       response
-//         .status(401)
-//         .json({ err: "Requête non autorisée le Token n'est pas bon" });
-//       return;
-//     }
-//      if (authData.id !== !request.body.user_id) {
-//     response.status(400).json({ error: "Le champs id est manquant" });
-//     return;
-//   }
-
-//     // const password = request.body.password;
-//     // const email = authData.email;
-//     // const hash = await bcrypt.hash(password, 10);
-//     // const sqlModifRequest = `UPDATE user SET password = ? WHERE email = ?`;
-
-//     // const modifValues = [hash, email];
-//     // const [rows] = await pool.execute(sqlModifRequest, modifValues);
-//     // if (rows.affectedRows > 0) {
-//     //   response
-//     //     .status(201)
-//     //     .json({ success: "Mofification mot de passe réussi" });
-//     //   return;
-//     // } else {
-//     //   response.status(500).json({ error: "L'nscription a échoué" });
-//     //   return;
-//     // }
-//   });
-// };
-
-//   if (!request.body.user_id) {
-//     response.status(400).json({ error: "Le champs id est manquant" });
-//     return;
-//   }
-//   let id = new ObjectId(request.body.id);
-
-//   const token = await extractToken(request);
-
-//   jwt.verify(token, process.env.SECRET_KEY, async (err, authData) => {
-//     if (err) {
-//       console.log(err);
-//       response
-//         .status(401)
-//         .json({ err: "Requête non autorisée le Token n'est pas bon" });
-//       return;
-//     }
-
-//     let post = await client
-//       .db("mingle_sphere")
-//       .collection("post")
-//       .find({ user_id: authData.id });
-//     if (!post) {
-//       response.status(401).json({ error: "Requête non autorisée" });
-//       return;
-//     }
-//     if (authData.id !== post.user_id || authData.role_id !== "1") {
-//       response.status(401).json({ error: "Requête non autorisée" });
-//       return;
-//     }
-//     try {
-//       await client
-//         .db("mingle_sphere")
-//         .collection("post")
-//         .deleteOne({ _id: id });
-//     } catch (e) {
-//       console.log(e);
-//       response.status(500).json(e);
-//     }
-//   });
-// };

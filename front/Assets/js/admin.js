@@ -1,5 +1,4 @@
-//
-
+// Affichage de tous les posts
 async function getAllPost() {
   let apiCall = await fetch("http://localhost:3003/post/all");
   let response = await apiCall.json();
@@ -267,6 +266,35 @@ async function updatePost(postId) {
     window.location.reload();
   } else {
     console.error("Échec de la mise à jour du post:", result);
+  }
+}
+
+// Delete user par admin
+async function deletePost(postId) {
+  let token = window.localStorage.getItem("jwt");
+
+  try {
+    let apiCall = await fetch(`http://localhost:3003/post/delete/`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ _id: postId }),
+    });
+    // if (apiCall.ok) {
+    //   console.log("Post supprimé avec succès");
+    //   // Supprimez le post du DOM
+    //   document.querySelector(`.btnDelet-${postId}`).closest(".card").remove();
+    // } else {
+    //   let errorResponse = await apiCall.json();
+    //   console.error(
+    //     "Erreur lors de la suppression du post:",
+    //     errorResponse.error
+    //   );
+    // }
+  } catch (error) {
+    console.error("Erreur lors de la suppression du post:", error);
   }
 }
 

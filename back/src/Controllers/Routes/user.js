@@ -7,6 +7,8 @@ const {
   ForgotPassword,
   login,
   testEmail,
+  getAllUser,
+  deleteUser,
 } = require("../userController");
 
 // Importer les middlewares
@@ -34,5 +36,11 @@ router.post("/login", login);
 
 // pour l'envoie de mail
 router.get("/email", testEmail);
+
+// Affiche tous les users
+router.get("/all/user", getAllUser);
+
+// Deltete user par admin
+router.delete("/delete/user/:id", deleteUser);
 
 module.exports = router;
